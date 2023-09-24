@@ -3,12 +3,12 @@ import numpy as np
 
 # Aqui hacer la implementacion de Seba
 # Función para generar la tabla de programación inicial
-def generador_tablas(dias, ratio):
-    tabla = np.zeros((ratio, dias), dtype=object)
+def generador_tablas(dias, num_enfermeras):
+    tabla = np.zeros((num_enfermeras, dias), dtype=object)
     config_inicial = ["D", "N", "L", "L"]
-    config_total = config_inicial * (ratio // len(config_inicial)) + config_inicial[:ratio % len(config_inicial)]
+    config_total = config_inicial * (num_enfermeras // len(config_inicial)) + config_inicial[:num_enfermeras % len(config_inicial)]
     for dia in range(dias):
-        for i in range(ratio):
+        for i in range(num_enfermeras):
             tabla[i, dia] = config_total[i]
         config_total = [config_total[-1]] + config_total[:-1]
     return tabla
@@ -167,15 +167,17 @@ def calcular_costos(tabla, tabla_horas_extra, parametros):
     num_ausencias = contar_ausencias(tabla)
     
     # Obtener el número de horas extra
-    num_horas_extra = np.sum(tabla_horas_extra == 'D') + np.sum(tabla_horas_extra == 'N')
+    num_horas_extra_dia = np.sum(tabla_horas_extra == 'D')
+    num_horas_extra_noche = np.sum(tabla_horas_extra == 'N')
     
     # Obtener los costos a partir de los parámetros
     costo_ausencia = parametros['infactibilidad']  # Costo de no tener suficiente personal
     # Cris: Ojo que debiese implementarse el costo de infactibilidad!!!
-    costo_hora_extra = parametros['costo_hora_extra']  # Costo de hora extra
+    costo_hora_extra_dia = parametros['costo_hora_extra_dia']  # Costo de hora extra
+    costo_hora_extra_noche = parametros['costo_hora_extra_noche']  # Costo de hora extra
     
     # Calcular el costo total
-    costo_total = num_horas_extra * costo_hora_extra + num_ausencias * costo_ausencia 
+    costo_total = num_horas_extra_dia * costo_hora_extra_dia + num_ausencias * costo_ausencia + num_horas_extra_noche * costo_hora_extra_noche
     
     return costo_total
 
@@ -188,3 +190,6 @@ def calcular_estadisticas(tabla, tabla_horas_extra):
         'total_ausencias': total_ausencias,
         'total_horas_extra': total_horas_extra
     }
+
+tabla = generador_tablas(30,1)
+print(tabla)

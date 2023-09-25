@@ -11,7 +11,7 @@ import optuna.visualization as ov
 def objetivo(trial):
     # Define los hiperparámetros que Optuna debe optimizar.
     # En este caso, estamos optimizando los valores en la lista.
-    lista_optimizada = [trial.suggest_int(f'costosmes{mes}', 1, 10) for mes in range(1, 13)]
+    lista_optimizada = [trial.suggest_int(f'Costo mes {mes}', 0, 50) for mes in range(1, 13)]
 
     # Llama a la función de simulación del año con la lista optimizada.
     costo_anual = simular_año(lista_optimizada)
@@ -26,7 +26,7 @@ study = False
 study = optuna.create_study(direction='minimize')
 
 if study:
-    study.optimize(objetivo, n_trials=100)
+    study.optimize(objetivo, n_trials=200)
     # Obtiene los mejores hiperparámetros y su costo asociado.
     best_params = study.best_params
     best_cost  = study.best_value

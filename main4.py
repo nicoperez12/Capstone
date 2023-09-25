@@ -90,7 +90,7 @@ def simular_mes(mes, cant_personal_extra):
 # Analizar esto:
 # Esta lista es un ejemplo!!!
 
-lista = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+lista = [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 def simular_año(lista):
     costo_acumulado_anual = 0
     for mes in range(1, 12):

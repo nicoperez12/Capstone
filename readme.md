@@ -27,3 +27,5 @@ Con los comentarios de cada archivo más la lectura del primer informe debiese q
 - Hacer análisis de sensibilidad (probablemente sobre las variables aleatorias para dar robustez a las soluciones)
 
 Para ver los resultados de lo que se lleva se puede correr el archivo **main4.py**
+Actualizacion:
+Se recomienda fuertemente comentar los prints de **main4.py** y correr **sim_optuna.py** en su lugar.

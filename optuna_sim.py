@@ -26,7 +26,7 @@ study = False
 study = optuna.create_study(direction='minimize')
 
 if study:
-    study.optimize(objetivo, n_trials=1000)
+    study.optimize(objetivo, n_trials=100)
     # Obtiene los mejores hiperparámetros y su costo asociado.
     best_params = study.best_params
     best_cost  = study.best_value

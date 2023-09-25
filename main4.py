@@ -1,5 +1,5 @@
 # AQUI DEBIESE IMPLEMENTARSE LA SIMULACIÓN SEGUN LA TABLA:
-from parametros import parametros 
+from parametros import *
 from funciones import *
 import random
 import numpy as np
@@ -24,6 +24,8 @@ def simular_mes(mes, cant_personal_extra):
     tabla1 = generador_tablas(dias, parametros["num_enfermeras"])
     tabla_horas_extra = generar_planilla_horas_extras(tabla1)
     tabla_personal_extra = generar_tabla_personal_extra(tabla1, cant_personal_extra)
+    alpha = alpha_meses[mes]
+    beta = dias-alpha
     #Esto se va a retornar
     costos_acumulados = 0
     # i = fila/enfermera, dia = columna
@@ -36,7 +38,7 @@ def simular_mes(mes, cant_personal_extra):
                 if random.random() <= parametros["bernoulli"]:
                     # Aquí hay que implementar la distribución discreta para la cantidad de días
                     # Esto requiere ser modificado y pulido
-                    dias_ausente = math.ceil(30*random.betavariate(parametros["alpha"], parametros["beta"]))
+                    dias_ausente = math.ceil(dias*random.betavariate(alpha, beta))
                     print(f"La enfermera de índice {i} se ha ausentado por {dias_ausente} días")
                     for j in range(0, dias_ausente):
                         try:

@@ -39,7 +39,7 @@ def simular_mes(mes, cant_personal_extra):
                     # Aquí hay que implementar la distribución discreta para la cantidad de días
                     # Esto requiere ser modificado y pulido
                     dias_ausente = math.ceil(dias*random.betavariate(alpha, beta))
-                    print(f"La enfermera de índice {i} se ha ausentado por {dias_ausente} días")
+                    #print(f"La enfermera de índice {i} se ha ausentado por {dias_ausente} días")
                     for j in range(0, dias_ausente):
                         try:
                         #Esto representa un ausentismo
@@ -47,8 +47,9 @@ def simular_mes(mes, cant_personal_extra):
                         except:
                             continue
                 else:
-                    print(f"la enfermera {i} asistió al trabajo el dia {dia}" )
-                    costos_acumulados += parametros["costo_hora"]*12
+                    #print(f"la enfermera {i} asistió al trabajo el dia {dia}" )
+                    costos_acumulados += parametros["costo_hora"]
+                    
 
         # Este proceso debiese revisar que se cumplan las restricciones:
         # En particular las restricciones a llenar son que se cubra el ratio pero queda por implementar:
@@ -59,27 +60,30 @@ def simular_mes(mes, cant_personal_extra):
         count_of_N = np.count_nonzero(column_to_count == 'N')  # Count "N" values in the column
         count_of_D = np.count_nonzero(column_to_count == 'D')
         
+        # Si no hay suficientes enfermeras para cubrir el ratio:
         if count_of_N < parametros["min_enfermeras"]:
             faltante_N = parametros["min_enfermeras"]-count_of_N
             # Aca hay que hacer algo xd, seleccionar potenciales horas extras. Implementar los algoritmos!
-            if tabla_horas_extra != implementar_turnos_extras(tabla1, tabla_horas_extra, "N", dia):
-                costos_acumulados += parametros["costo_hora_extra_noche"]*12*faltante_N
+            #print(tabla_horas_extra)
+            #print(implementar_personal_extra(tabla_personal_extra, "N", dia))
+            if tabla_horas_extra == implementar_turnos_extras(tabla1, tabla_horas_extra, "N", dia):
+                costos_acumulados += parametros["costo_hora_extra_noche"]*faltante_N
             else:
                 if tabla_personal_extra == implementar_personal_extra(tabla_personal_extra, "N", dia):
                     costos_acumulados += parametros["infactibilidad"]
-                    print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir la noche")
+                    #print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir la noche")
 
         if count_of_D < parametros["min_enfermeras"]:
             faltante_D = parametros["min_enfermeras"]-count_of_D
-            if tabla_horas_extra != implementar_turnos_extras(tabla1, tabla_horas_extra, "D", dia):
-                costos_acumulados += parametros["costo_hora_extra_dia"]*12*faltante_D
+            if tabla_horas_extra == implementar_turnos_extras(tabla1, tabla_horas_extra, "D", dia):
+                costos_acumulados += parametros["costo_hora_extra_dia"]*faltante_D
             else:
                 if tabla_personal_extra == implementar_personal_extra(tabla_personal_extra, "D", dia):
                     costos_acumulados += parametros["infactibilidad"]
-                    print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir el dia")
+                    #print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir el dia")
 
-    print(calcular_estadisticas(tabla1, tabla_horas_extra))
-    print(f"\nCostos acumulados de {costos_acumulados} para el mes {mes + 1}")
+    #print(calcular_estadisticas(tabla1, tabla_horas_extra))
+    #print(f"\nCostos acumulados de {costos_acumulados} para el mes {mes}")
     return costos_acumulados
 
 #simular_mes(1, 4)
@@ -90,11 +94,9 @@ def simular_mes(mes, cant_personal_extra):
 # Analizar esto:
 # Esta lista es un ejemplo!!!
 
-lista = [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+lista = [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 def simular_año(lista):
     costo_acumulado_anual = 0
     for mes in range(1, 12):
         costo_acumulado_anual += simular_mes(mes, lista[mes-1])
     return costo_acumulado_anual
-        
-simular_año(lista)

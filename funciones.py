@@ -6,10 +6,11 @@ import numpy as np
 def generador_tablas(dias, num_enfermeras):
     tabla = np.zeros((num_enfermeras, dias), dtype=object)
     config_inicial = ["D", "N", "L", "L"]
-    config_total = config_inicial * (num_enfermeras // len(config_inicial)) + config_inicial[:num_enfermeras % len(config_inicial)]
-    for dia in range(dias):
-        for i in range(num_enfermeras):
-            tabla[i, dia] = config_total[i]
+
+    config_total = config_inicial * (dias // len(config_inicial)) + config_inicial[:dias % len(config_inicial)]
+    
+    for i in range(num_enfermeras):
+        tabla[i] = config_total
         config_total = [config_total[-1]] + config_total[:-1]
     return tabla
 
@@ -21,9 +22,14 @@ def generar_planilla_horas_extras(tabla):
     dias = len(tabla[0])
     enfermeras = len(tabla)
     # Inicializar la planilla de horas extras como una matriz de ceros
-    planilla_horas_extras = [[0 for _ in range(dias)] for _ in range(enfermeras)]
+    planilla_horas_extras = [["0" for _ in range(dias)] for _ in range(enfermeras)]
 
     return planilla_horas_extras
+    #tabla de [ ["0","0","0","0"],["0","0","0","0"],["0","0","0","0"],["0","0","0","0"],["0","0","0","0"] ] 5 personas con 4 dias vacios de hora extra
+
+
+
+
 
 def imprimir_planilla_horas_extras(planilla_horas_extras):
     for i, fila in enumerate(planilla_horas_extras):
@@ -89,6 +95,28 @@ tabla_personal_extra = generar_tabla_personal_extra(tabla_turnos_generada, 4)
 imprimir_tabla_personal_extra(tabla_personal_extra)
  """
 
+
+
+def revisar_semana(tabla_turnos_extra, i, dia):
+    # Esto revisa si una enfermera i puede hacer un turno extra o no
+    # Esto esta harcodeado, hay que implementarlo bien (añadir argumento de mes)
+    # Pero por mientras va a servir
+    mes = 9 
+    try:
+        primer_dia_semana, ultimo_dia_semana = identificar_semana_y_dias(mes, dia)
+    except ValueError:
+        print("Esos días no corresponden al mes")
+        return False
+    # Contar para esa fila en especifico si los días en la semana ya tienen un D o N 
+    tabla_turnos_extra_np = np.array(tabla_turnos_extra)[i, primer_dia_semana:ultimo_dia_semana]
+    count_of_N = np.count_nonzero(tabla_turnos_extra_np == 'N')  # Count "N" values in the column
+    count_of_D = np.count_nonzero(tabla_turnos_extra_np == 'D')
+    if count_of_D + count_of_N > 1:
+        return False
+    else:
+        return True
+
+
 # Esta funcion busca implementar un turno extra
 # Se le da una tabla original, una tabla de turnos extras, y busca algun espacio en el dia específico que satisfaga las restricciones
 def implementar_turnos_extras(tabla_original, tabla_turnos_extra, tipo, dia):
@@ -101,7 +129,7 @@ def implementar_turnos_extras(tabla_original, tabla_turnos_extra, tipo, dia):
             if revisar_vecindad(tabla_original, tipo, i, dia):
                 if revisar_semana(tabla_turnos_extra, i, dia):
                     tabla_turnos_extra[i][dia] = tipo
-                    print(f"la enfermera {i} debiese hacer un turno extra el dia {dia} de tipo {tipo}")
+                    # print(f"la enfermera {i} debiese hacer un turno extra el dia {dia} de tipo {tipo}")
                     return tabla_turnos_extra
                 
     print(f"No hay turnos extra disponibles!")
@@ -128,29 +156,14 @@ def revisar_vecindad(tabla_original, tipo, i, dia):
         if tipo == "N":
             if tabla_original[i][dia+1] == "D":
                 return False
+            else:
+                return True
         else:
             return True
     except:
         return True
     
-def revisar_semana(tabla_turnos_extra, i, dia):
-    # Esto revisa si una enfermera i puede hacer un turno extra o no
-    # Esto esta harcodeado, hay que implementarlo bien (añadir argumento de mes)
-    # Pero por mientras va a servir
-    mes = 9 
-    try:
-        primer_dia_semana, ultimo_dia_semana = identificar_semana_y_dias(mes, dia)
-    except ValueError:
-        print("Esos días no corresponden al mes")
-        return False
-    # Contar para esa fila en especifico si los días en la semana ya tienen un D o N 
-    tabla_turnos_extra_np = np.array(tabla_turnos_extra)[i, primer_dia_semana:ultimo_dia_semana]
-    count_of_N = np.count_nonzero(tabla_turnos_extra_np == 'N')  # Count "N" values in the column
-    count_of_D = np.count_nonzero(tabla_turnos_extra_np == 'D')
-    if count_of_D + count_of_N > 1:
-        return False
-    else:
-        return True
+
 
 # Esto lo hizo seba:   
 # Función para contar ausencias
@@ -191,5 +204,8 @@ def calcular_estadisticas(tabla, tabla_horas_extra):
         'total_horas_extra': total_horas_extra
     }
 
-tabla = generador_tablas(30,1)
-print(tabla)
+# tabla = generador_tablas(8,4)
+# tabla2 = generar_planilla_horas_extras(tabla)
+# print(tabla)
+# print(tabla2)
+

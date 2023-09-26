@@ -21,6 +21,8 @@ alpha_meses = {1: 3.623318,
                11: 3.908953,
                12: 4.150072}
 
+# FALTARIA UN PARAMETRO PARA LAS VACACIONES
+
 
 # Notas sobre el funcionamiento de Beta y como hacer el código más escalable:
 """ Given alpha and β, you can calculate the probability that a nurse will be absent on any given

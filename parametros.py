@@ -4,6 +4,7 @@ parametros = {'num_columnas' :10, 'num_filas':5 , "num_enfermeras": 651,
                "costo_hora": 1,
                "costo_hora_extra_dia": 1.25,
                "costo_hora_extra_noche": 1.5,
+               "costo_hora_on_demand": 0.75,
                'costo_personal_extra': 0.075,
                'infactibilidad': 10**10,
                'bernoulli': 0.20621762}

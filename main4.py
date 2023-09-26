@@ -72,6 +72,8 @@ def simular_mes(mes, cant_personal_extra):
                 if tabla_personal_extra == implementar_personal_extra(tabla_personal_extra, "N", dia):
                     costos_acumulados += parametros["infactibilidad"]
                     #print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir la noche")
+                else:
+                    costos_acumulados += parametros["costo_hora_on_demand"]*faltante_N
 
         if count_of_D < parametros["min_enfermeras"]:
             faltante_D = parametros["min_enfermeras"]-count_of_D
@@ -81,6 +83,8 @@ def simular_mes(mes, cant_personal_extra):
                 if tabla_personal_extra == implementar_personal_extra(tabla_personal_extra, "D", dia):
                     costos_acumulados += parametros["infactibilidad"]
                     #print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir el dia")
+                else:
+                    costos_acumulados += parametros["costo_hora_on_demand"]*faltante_D
 
     #print(calcular_estadisticas(tabla1, tabla_horas_extra))
     #print(f"\nCostos acumulados de {costos_acumulados} para el mes {mes}")
@@ -100,3 +104,5 @@ def simular_año(lista):
     for mes in range(1, 12):
         costo_acumulado_anual += simular_mes(mes, lista[mes-1])
     return costo_acumulado_anual
+
+print(generador_tablas(7, 4))

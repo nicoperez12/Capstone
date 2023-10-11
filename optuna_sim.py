@@ -17,7 +17,7 @@ def objetivo(trial):
     # Llama a la función de simulación del año con la lista optimizada.
     costo_acumulado_anual = 0
     for mes in range(1, 12):
-        costo_acumulado_anual += simular_mes(mes, lista_optimizada[mes-1])
+        costo_acumulado_anual += simular_mes_enfermeras(mes, lista_optimizada[mes-1])
 
     #Queremos minimizar el costo anual.
     return costo_acumulado_anual

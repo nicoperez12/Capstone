@@ -6,10 +6,10 @@ import numpy as np
 import math
 
 # Instanciar la primera tabla
-tabla1 = generador_tablas(parametros["dias"], parametros["num_enfermeras"])
-tabla_horas_extra = generar_planilla_horas_extras(tabla1)
+#tabla1 = generador_tablas(parametros["dias"], parametros["num_enfermeras"])
+#tabla_horas_extra = generar_planilla_horas_extras(tabla1)
 # Ese 4 es una variable. De hecho es la variable sobre la cual se optimiza
-tabla_personal_extra = generar_tabla_personal_extra(tabla1, 4)
+#tabla_personal_extra = generar_tabla_personal_extra(tabla1, 4)
 # No se sabe cuanto personal extra contratar
 # El hospital rellena en forma aleatoria mientras puede (con horas extras)
 
@@ -19,36 +19,38 @@ tabla_personal_extra = generar_tabla_personal_extra(tabla1, 4)
 
 #SIMULACION PARA ENFERMERAS
 
-def simular_mes(mes, cant_personal_extra):
+def simular_mes_enfermeras(mes, cant_personal_extra):
     dias = calendar.monthrange(2023, mes)[1]
-    tabla1 = generador_tablas(dias, parametros["num_enfermeras"])
-    tabla_horas_extra = generar_planilla_horas_extras(tabla1)
-    tabla_personal_extra = generar_tabla_personal_extra(tabla1, cant_personal_extra)
-    alpha = alpha_meses[mes]
-    beta = dias-alpha
     #Esto se va a retornar
-    costos_acumulados = 0
+    costos_acumulados = costo_enfermeras["costo_fijo_on_demand"]*cant_personal_extra
     # i = fila/enfermera, dia = columna
+    tabla1 = generador_tablas(dias, parametros["num_enfermeras"])
     # Este proceso revisa cada dia si la enfermera va a trabajar o no (si es que le corresponde)
-    for dia in range(len(tabla1[0])):
-        # Este proceso decide si la enfermera que le toca ir va o no
-        for i in range(len(tabla1)):
-            enfermera = tabla1[i][dia]
-            if enfermera == "D" or enfermera == "N":
-                if random.random() <= parametros["bernoulli"]:
-                    # Aquí hay que implementar la distribución discreta para la cantidad de días
-                    # Esto requiere ser modificado y pulido
-                    dias_ausente = math.ceil(dias*random.betavariate(alpha, beta))
-                    #print(f"La enfermera de índice {i} se ha ausentado por {dias_ausente} días")
-                    for j in range(0, dias_ausente):
-                        try:
-                        #Esto representa un ausentismo
-                            tabla1[i][dia+j] = "A"
-                        except:
-                            continue
-                else:
-                    #print(f"la enfermera {i} asistió al trabajo el dia {dia}" )
-                    costos_acumulados += parametros["costo_hora"]
+    for area in parametros["areas"]:
+        tabla_indefinido = generador_tablas(dias, cant_enfermeras_por_area[area])
+        tabla_extra_indefinido = generar_planilla_horas_extras(tabla_indefinido)
+        tabla_on_demand = generar_tabla_personal_extra(tabla1, cant_personal_extra)
+        alpha = alpha_meses_enfermeras[area][mes]
+        beta = dias-alpha
+        for dia in range(len(tabla_indefinido[0])):
+            # Este proceso decide si la enfermera con contrato indefinido que le toca ir va o no
+            for i in range(len(tabla_indefinido)):
+                enfermera = tabla_indefinido[i][dia]
+                if enfermera == "D" or enfermera == "N":
+                    if random.random() <= parametros["bernoulli"]:
+                        # Aquí hay que implementar la distribución discreta para la cantidad de días
+                        # Esto requiere ser modificado y pulido
+                        dias_ausente = math.ceil(dias*random.betavariate(alpha, beta))
+                        #print(f"La enfermera de índice {i} se ha ausentado por {dias_ausente} días")
+                        for j in range(0, dias_ausente):
+                            try:
+                            #Esto representa un ausentismo
+                                tabla_indefinido[i][dia+j] = "A"
+                            except:
+                                continue
+                    else:
+                        #print(f"la enfermera {i} asistió al trabajo el dia {dia}" )
+                        costos_acumulados += costo_enfermeras["costo_hora_indefinido"]
                     
 
         # Este proceso debiese revisar que se cumplan las restricciones:
@@ -61,30 +63,30 @@ def simular_mes(mes, cant_personal_extra):
         count_of_D = np.count_nonzero(column_to_count == 'D')
         
         # Si no hay suficientes enfermeras para cubrir el ratio:
-        if count_of_N < parametros["min_enfermeras"]:
-            faltante_N = parametros["min_enfermeras"]-count_of_N
+        if count_of_N < min_enfermeras_por_area[area]:
+            faltante_N = min_enfermeras_por_area[area]-count_of_N
             # Aca hay que hacer algo xd, seleccionar potenciales horas extras. Implementar los algoritmos!
             #print(tabla_horas_extra)
             #print(implementar_personal_extra(tabla_personal_extra, "N", dia))
-            if tabla_horas_extra == implementar_turnos_extras(tabla1, tabla_horas_extra, "N", dia):
-                costos_acumulados += parametros["costo_hora_extra_noche"]*faltante_N
+            if tabla_extra_indefinido == implementar_turnos_extras(tabla_indefinido, tabla_extra_indefinido, "N", dia):
+                costos_acumulados += costo_enfermeras["costo_hora_indefinido"]*costo_enfermeras["factor_hora_extra_noche"]*faltante_N
             else:
-                if tabla_personal_extra == implementar_personal_extra(tabla_personal_extra, "N", dia):
+                if tabla_on_demand == implementar_personal_extra(tabla_on_demand, "N", dia):
                     costos_acumulados += parametros["infactibilidad"]
                     #print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir la noche")
                 else:
-                    costos_acumulados += parametros["costo_hora_on_demand"]*faltante_N
+                    costos_acumulados += costo_enfermeras["costo_hora_on_demand"]*costo_enfermeras["factor_hora_extra_noche"]*faltante_N
 
-        if count_of_D < parametros["min_enfermeras"]:
-            faltante_D = parametros["min_enfermeras"]-count_of_D
-            if tabla_horas_extra == implementar_turnos_extras(tabla1, tabla_horas_extra, "D", dia):
-                costos_acumulados += parametros["costo_hora_extra_dia"]*faltante_D
+        if count_of_D < min_enfermeras_por_area[area]:
+            faltante_D = min_enfermeras_por_area[area]-count_of_D
+            if tabla_extra_indefinido == implementar_turnos_extras(tabla_indefinido, tabla_extra_indefinido, "D", dia):
+                costos_acumulados += costo_enfermeras["costo_hora_indefinido"]*costo_enfermeras["factor_hora_extra_dia"]*faltante_D
             else:
-                if tabla_personal_extra == implementar_personal_extra(tabla_personal_extra, "D", dia):
+                if tabla_on_demand == implementar_personal_extra(tabla_on_demand, "D", dia):
                     costos_acumulados += parametros["infactibilidad"]
-                    #print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir el dia")
+                    #print(f"Hoy, día {dia} no hay suficientes enfermeras para cubrir la noche")
                 else:
-                    costos_acumulados += parametros["costo_hora_on_demand"]*faltante_D
+                    costos_acumulados += costo_enfermeras["costo_hora_on_demand"]*costo_enfermeras["factor_hora_extra_dia"]*faltante_D
 
     #print(calcular_estadisticas(tabla1, tabla_horas_extra))
     #print(f"\nCostos acumulados de {costos_acumulados} para el mes {mes}")
@@ -102,7 +104,7 @@ lista = [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 def simular_año(lista):
     costo_acumulado_anual = 0
     for mes in range(1, 12):
-        costo_acumulado_anual += simular_mes(mes, lista[mes-1])
+        costo_acumulado_anual += simular_mes_enfermeras(mes, lista[mes-1])
     return costo_acumulado_anual
 
-print(generador_tablas(7, 4))
+print(simular_año(lista))

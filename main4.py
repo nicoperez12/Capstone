@@ -37,7 +37,7 @@ def simular_mes_enfermeras(mes, cant_personal_extra):
             for i in range(len(tabla_indefinido)):
                 enfermera = tabla_indefinido[i][dia]
                 if enfermera == "D" or enfermera == "N":
-                    if random.random() <= parametros["bernoulli"]:
+                    if random.random() <= bernoulli_meses_enfermeras[area][mes]:
                         # Aquí hay que implementar la distribución discreta para la cantidad de días
                         # Esto requiere ser modificado y pulido
                         dias_ausente = math.ceil(dias*random.betavariate(alpha, beta))

@@ -1,5 +1,5 @@
 # AQUI DEBIESE IMPLEMENTARSE LA SIMULACIÓN SEGUN LA TABLA:
-from parametros import parametros 
+from parametros import cant_enfermeras_por_area
 from funciones import *
 import random
 import numpy as np
@@ -12,12 +12,19 @@ from optuna.samplers import TPESampler
 def objetivo(trial):
     # Define los hiperparámetros que Optuna debe optimizar.
     # En este caso, estamos optimizando los valores en la lista.
-    lista_optimizada = [trial.suggest_int(f'Horas extra mes {mes}', 0, 100) for mes in range(1, 13)]
+    horas_extra_optimas = []
+    for mes in range(1, 13):
+        horas_extra_mes = {}
+        for area, cant_enfermeras in cant_enfermeras_por_area.items():
+            sugerencia = trial.suggest_int(f'Horas extra mes {mes} {area}', 0, cant_enfermeras)
+            #diccionario de horas extra por mes y area
+            horas_extra_mes[area] = sugerencia
+        horas_extra_optimas.append(horas_extra_mes)
     
     # Llama a la función de simulación del año con la lista optimizada.
     costo_acumulado_anual = 0
-    for mes in range(1, 12):
-        costo_acumulado_anual += simular_mes_enfermeras(mes, lista_optimizada[mes-1])
+    for mes in range(1, 13):
+        costo_acumulado_anual += simular_mes_enfermeras(mes, horas_extra_optimas[mes-1])
 
     #Queremos minimizar el costo anual.
     return costo_acumulado_anual
@@ -40,4 +47,4 @@ print(f"Costo mínimo encontrado: {best_cost}")
 
 # Visualización en gráficos (creo que se necesita libreria plotly)
 ov.plot_optimization_history(study).show(renderer="browser")
-ov.plot_param_importances(study).show(renderer="browser") # Hay muchos más pero estos eran los más importantes
+#ov.plot_param_importances(study).show(renderer="browser") # Hay muchos más pero estos eran los más importantes

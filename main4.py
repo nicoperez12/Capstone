@@ -22,14 +22,14 @@ import math
 def simular_mes_enfermeras(mes, cant_personal_extra):
     dias = calendar.monthrange(2023, mes)[1]
     #Esto se va a retornar
-    costos_acumulados = costo_enfermeras["costo_fijo_on_demand"]*cant_personal_extra
+    costos_acumulados = costo_enfermeras["costo_fijo_on_demand"]*sum(cant_personal_extra.values())
     # i = fila/enfermera, dia = columna
     tabla1 = generador_tablas(dias, parametros["num_enfermeras"])
     # Este proceso revisa cada dia si la enfermera va a trabajar o no (si es que le corresponde)
     for area in parametros["areas"]:
         tabla_indefinido = generador_tablas(dias, cant_enfermeras_por_area[area])
         tabla_extra_indefinido = generar_planilla_horas_extras(tabla_indefinido)
-        tabla_on_demand = generar_tabla_personal_extra(tabla1, cant_personal_extra)
+        tabla_on_demand = generar_tabla_personal_extra(tabla1, cant_personal_extra[area])
         alpha = alpha_meses_enfermeras[area][mes]
         beta = dias-alpha
         for dia in range(len(tabla_indefinido[0])):
@@ -106,5 +106,3 @@ def simular_año(lista):
     for mes in range(1, 12):
         costo_acumulado_anual += simular_mes_enfermeras(mes, lista[mes-1])
     return costo_acumulado_anual
-
-print(simular_año(lista))

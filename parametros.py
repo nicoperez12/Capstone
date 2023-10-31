@@ -373,8 +373,8 @@ bernoulli_meses_enfermeras = {"UNIDAD CUIDADOS DE PEDIATRIA": {1: (7/(27*31)),
 }
 
 costo_tens = {"costo_hora_indefinido": 1,
-                    "costo_hora_on_demand": 0.75,
-                    'costo_fijo_on_demand': 0.175,
+                    "costo_hora_on_demand": 0.7,
+                    'costo_fijo_on_demand': 0.2,
                     "factor_hora_extra_dia": 1.25,
                     "factor_hora_extra_noche": 1.5,
 }
@@ -394,19 +394,19 @@ cant_tens_por_area = {"UNIDAD CUIDADOS DE PEDIATRIA": 26,
                         "MEDICO QUIRURGICO": 7+12+8+17+21+6
 }
 
-min_tens_por_area = {"UNIDAD CUIDADOS DE PEDIATRIA": 7,
-                        "CENTRO PACIENTES CRITICOS MED.": 13,
-                        "UNIDAD NEONATOLOGIA": 10,
+min_tens_por_area = {"UNIDAD CUIDADOS DE PEDIATRIA": 5,
+                        "CENTRO PACIENTES CRITICOS MED.": 14,
+                        "UNIDAD NEONATOLOGIA": 8,
                         "SERVICIO RECUPERACION 6° PISO": 3,
-                        "UNIDAD CORONARIA": 4,
+                        "UNIDAD CORONARIA": 5,
                         "INTERMEDIO PEDIATRICO": 3,
                         "SERVICIO DE PEDIATRIA": 3,
-                        "ONCOLOGIA PEDIATRICA": 3,
+                        "ONCOLOGIA PEDIATRICA": 4,
                         "SERVICIO INTERMEDIO MEDICO": 18,
                         "INTERMEDIO CORONARIO": 4,
                         "ONCOLOGIA ADULTO": 8,
-                        "SERVICIO DE MATERNIDAD": 4,
-                        "MEDICO QUIRURGICO": 11
+                        "SERVICIO DE MATERNIDAD": 6,
+                        "MEDICO QUIRURGICO": 21
 }
 
 alpha_meses_tens = {"UNIDAD CUIDADOS DE PEDIATRIA": {1: 4.058824,

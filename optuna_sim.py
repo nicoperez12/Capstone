@@ -7,6 +7,7 @@ from main4 import *
 import optuna
 import optuna.visualization as ov
 from optuna.samplers import TPESampler
+import pandas as pd
 
 #Optuna
 def objetivo_enfermeras(trial):
@@ -52,7 +53,7 @@ def objetivo_tens(trial):
 #costo_anual = simular_año(lista)
 #print("Costo anual: ", costo_anual)
 
-n_iter = 100
+n_iter = 10
 costo_e = 0
 costo_t = 0
 lista_e = []
@@ -86,7 +87,7 @@ for i in range(2):
 
 print(f"\nMejores hiperparámetros encontrados ENFERMERAS\n:")
 #Mejor lista de personal extra
-print(f"Mejor lista encontrada: {lista_e}")
+print(f"Mejor lista encontrada: {study.best_params}")
 print(f"Costo mínimo encontrado: {costo_e}\n")
 
 print("Mejores hiperparámetros encontrados TENS\n:")
@@ -95,3 +96,21 @@ print(f"Mejor lista encontrada: {lista_t}")
 print(f"Costo mínimo encontrado: {costo_t}\n")
 
 print(f"COSTO TOTAL: {costo_e+costo_t}")
+
+areas = parametros['areas']
+meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+         "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+with pd.ExcelWriter('cantidad_optima_extra.xlsx') as writer:
+    n = 0
+    for area in areas:
+        area_index = areas.index(area)
+        #print(area_index)
+        data = {'Enfermeras': [], 'TENS': []}
+        for i in range(12):
+            data['Enfermeras'].append(lista_e[13*i+area_index])
+            data['TENS'].append(lista_t[13*i+area_index])
+            #print(data)
+        df = pd.DataFrame(data, index=meses)
+        
+        n += 1
+        df.to_excel(writer, sheet_name=area, index_label='Mes')
